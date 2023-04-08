@@ -237,3 +237,38 @@ class MainPage_MapPick(Frame):
             elif self.vars["algorithm"].get() == "A* Search":
                 print("A* Search")
 
+"""Body Component for Main Page (Map Pick Mode)"""
+class MainPage_FileInput_Body(Canvas):
+    def __init__(self, parent):
+        super().__init__(parent)
+        change_background(self, "main_page/body-bg.png")
+        self.parent = parent
+
+        self.start_dropdown : Combobox = None
+        self.dest_dropdown : Combobox = None
+
+        self.build()
+
+    def build(self):
+        builder_dropdown = DropdownBuilder(self)
+
+        # Create dropdowns
+        self.start_dropdown = builder_dropdown.create("Starting Node", [], 40, 40, self.parent.vars["start_node"])
+        self.start_dropdown.state(["disabled"])
+
+        self.dest_dropdown = builder_dropdown.create("Destination Node", [], 40, 140, self.parent.vars["dest_node"])
+        self.dest_dropdown.state(["disabled"])
+        
+        builder_dropdown.create("Algorithm", ["Uniform-Cost Search", "A* Search"], 40, 240, self.parent.vars["algorithm"])
+
+        # Start button
+        self.create_text(40, 355, text="Start Finding", font=("Montserrat", 16, "bold"), fill="white", anchor="nw")   
+        img_start_btn = add_img(self, "main_page/start-button.png", 1)
+        start_btn = self.create_image(200, 350, image=img_start_btn, anchor="nw")
+        self.tag_bind(start_btn, "<Button-1>", lambda e: self.parent.run_algorithm())
+
+        # Clear button
+        self.create_text(40, 405, text="Clear", font=("Montserrat", 16, "bold"), fill="white", anchor="nw")
+        img_clear_btn = add_img(self, "main_page/clear-button.png", 1)
+        clear_btn = self.create_image(200, 400, image=img_clear_btn, anchor="nw")
+        self.tag_bind(clear_btn, "<Button-1>", lambda e: self.parent.window.refresh_page())
