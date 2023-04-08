@@ -3,6 +3,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
 
+NODE_COLOR = "#E2BD45"
+
 class GraphCanvas(Canvas):
     def __init__(self, parent, data):
         super().__init__(parent)
@@ -34,7 +36,8 @@ class GraphCanvas(Canvas):
             ])
 
         pos = nx.spring_layout(self.graph)
-        nx.draw(self.graph, pos, with_labels=True)
+        nx.draw(self.graph, pos, with_labels=True, node_color=NODE_COLOR, 
+                font_color="white", font_weight="bold", node_size=1000, width=1.5, font_size=10)
         self.output_file_path = "../test/result/graph.png"
         plt.savefig(self.output_file_path)
 
