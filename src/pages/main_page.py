@@ -192,7 +192,7 @@ class MainPage_MapPick(Frame):
             "algorithm": StringVar(value="Not Selected"),
             "file_path": StringVar(value="None"),
             "num_of_nodes": IntVar(value=0),
-            "message": StringVar(value="Please load a file first before running the algorithm"),
+            "message": StringVar(value="Select at least 5 nodes before running the algorithm"),
         }
 
         self.build()
@@ -210,7 +210,7 @@ class MainPage_MapPick(Frame):
         header.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # body
-        body = MainPage_FileInput_Body(self)
+        body = MainPage_MapPick_Body(self)
         body.grid(row=1, column=0, rowspan=2, sticky="nsew")
 
         # footer
@@ -238,7 +238,7 @@ class MainPage_MapPick(Frame):
                 print("A* Search")
 
 """Body Component for Main Page (Map Pick Mode)"""
-class MainPage_FileInput_Body(Canvas):
+class MainPage_MapPick_Body(Canvas):
     def __init__(self, parent):
         super().__init__(parent)
         change_background(self, "main_page/body-bg.png")
