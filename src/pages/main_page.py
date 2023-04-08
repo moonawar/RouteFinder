@@ -4,6 +4,7 @@ from utils.canvas_utils import *
 from utils.file_reader import *
 from utils.element_builder import DropdownBuilder, FilePickerBuilder
 from utils.graph_drawer import GraphCanvas
+from utils.map_provider import MapView
 from window.i_main_window import IMainWindow
 
 """ Main Page for File Input Mode"""
@@ -183,17 +184,19 @@ class MainPage_MapPick(Frame):
         super().__init__(window)
         self.window = window
         self.assets = []
-        self.graph_canvas = None
+        self.markers = []
 
         # dropdown options
         self.vars = {
-            "start_node": StringVar(value="Load File First"),
-            "dest_node": StringVar(value="Load File First"),
+            "start_node": StringVar(value="Select 5 Nodes or More"),
+            "dest_node": StringVar(value="Select 5 Nodes or More"),
             "algorithm": StringVar(value="Not Selected"),
-            "file_path": StringVar(value="None"),
             "num_of_nodes": IntVar(value=0),
             "message": StringVar(value="Select at least 5 nodes before running the algorithm"),
         }
+
+        self.start_dropdown : Combobox = None
+        self.dest_dropdown : Combobox = None
 
         self.build()
     
@@ -212,17 +215,19 @@ class MainPage_MapPick(Frame):
         # body
         body = MainPage_MapPick_Body(self)
         body.grid(row=1, column=0, rowspan=2, sticky="nsew")
+        self.start_dropdown = body.start_dropdown
+        self.dest_dropdown = body.dest_dropdown
+
+        # map view
+        map_view = MapView(self)
+        map_view.grid(row=1, column=1, sticky="nsew")
 
         # footer
         footer = MainPage_Footer(self)
         footer.grid(row=2, column=1, sticky="nsew")
 
     def run_algorithm(self):
-        if self.vars["file_path"].get() == "None":
-            self.vars["message"].set("Please load a file first before running the algorithm")
-            messagebox.showerror("Error", "Please load a file first before running the algorithm")
-            return
-        elif self.vars["start_node"].get() == "Select Node" or self.vars["dest_node"].get() == "Select Node":
+        if self.vars["start_node"].get() == "Select Node" or self.vars["dest_node"].get() == "Select Node":
             self.vars["message"].set("Please select a start and destination node")
             messagebox.showerror("Error", "Please select a start and destination node")
             return
@@ -236,6 +241,19 @@ class MainPage_MapPick(Frame):
                 print("Uniform-Cost Search")
             elif self.vars["algorithm"].get() == "A* Search":
                 print("A* Search")
+
+    def on_marker_added(self):
+        self.vars["num_of_nodes"].set(len(self.markers))
+        if len(self.markers) >= 5:
+            self.start_dropdown.config(values=[str(x+1) for x in range(len(self.markers))])
+            self.start_dropdown.state(["!disabled"])
+            self.vars["start_node"].set("Select Node")
+
+            self.dest_dropdown.config(values=[str(x+1) for x in range(len(self.markers))])
+            self.dest_dropdown.state(["!disabled"])
+            self.vars["dest_node"].set("Select Node")
+
+            self.vars["message"].set("Keep adding nodes or run the algorithm")
 
 """Body Component for Main Page (Map Pick Mode)"""
 class MainPage_MapPick_Body(Canvas):
