@@ -1,5 +1,6 @@
 from window.i_main_window import IMainWindow
 from pages.starting_page import StartingPage
+from pages.main_page import MainPage_FileInput
 
 class MainWindow(IMainWindow):
     def __init__(self):
@@ -12,7 +13,7 @@ class MainWindow(IMainWindow):
         # init pages
         self.pages = {
             "StartingPage": StartingPage(self),
-            # "MainPage_FileInput": MainPage_FileInput(self),
+            "MainPage_FileInput": MainPage_FileInput(self),
             # "MainPage_MapPick": MainPage_GoogleMap(self)
         }
 
