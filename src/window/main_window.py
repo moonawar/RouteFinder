@@ -25,3 +25,8 @@ class MainWindow(IMainWindow):
         self.opened_page.grid_forget()
         self.opened_page = self.pages[page_name]
         self.opened_page.grid(row=0, column=0, sticky="nsew")
+
+    def refresh_page(self):
+        new_page = self.opened_page.__class__(self)
+        self.pages[self.opened_page.__class__.__name__] = new_page
+        self.open_page(self.opened_page.__class__.__name__)

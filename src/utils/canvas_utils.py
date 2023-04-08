@@ -1,4 +1,4 @@
-from tkinter import Canvas, Label, PhotoImage
+from tkinter import Canvas
 from PIL import ImageTk, Image
 
 # notice : image_path is relative to asset folder
