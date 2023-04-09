@@ -38,6 +38,8 @@ class MapView(TkinterMapView):
         self.markers.append(new_marker)
 
         # ASSUMPTION : Road is undirectional, path from A to B is the same as path from B to A
+        # shorter path will be chosen if A to B and B to A have different distance
+
         # Add distance to all nodes to f_n (real distance)
         self.f_n.append([])
         j = len(self.markers) - 1
@@ -59,8 +61,12 @@ class MapView(TkinterMapView):
         self.parent.on_marker_added()
 
     def create_path(self, start, end):
-        directions = self.gmaps.directions(start, end, mode="driving")
-        steps = directions[0]["legs"][0]["steps"]
+        directionsA = self.gmaps.directions(start, end, mode="driving")
+        directionsB = self.gmaps.directions(end, start, mode="driving")
+
+        shorter_directions = directionsA if directionsA[0]["legs"][0]["distance"]["value"] <= directionsB[0]["legs"][0]["distance"]["value"] else directionsB
+
+        steps = shorter_directions[0]["legs"][0]["steps"]
 
         starting_pos = (steps[0]["start_location"]["lat"], steps[0]["start_location"]["lng"])
         position_list = [starting_pos]
@@ -68,4 +74,4 @@ class MapView(TkinterMapView):
             position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
 
         self.set_path(position_list, color = "#E1341E")
-        return directions[0]["legs"][0]["distance"]["value"]
+        return shorter_directions[0]["legs"][0]["distance"]["value"]
