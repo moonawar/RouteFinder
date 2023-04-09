@@ -13,7 +13,9 @@ class MainPage_FileInput(Frame):
         super().__init__(window)
         self.window = window
         self.assets = []
-        self.graph_canvas = None
+        self.graph_canvas : GraphCanvas = None
+        self.f_n = []
+        self.h_n = []
 
         # dropdown options
         self.vars = {
@@ -123,9 +125,12 @@ class MainPage_FileInput_Body(Canvas):
     # File picker callback
     def on_file_picked(self, file_path : str):
         self.parent.vars["file_path"].set(file_path)
-
+        
         nodes = file_to_matrix(file_path)
         self.create_graph(nodes)
+
+        self.parent.f_n = nodes
+        self.parent.h_n = nodes
 
         self.parent.vars["num_of_nodes"].set(len(nodes))
         self.parent.vars["message"].set("File " + file_path.split("/")[-1] + " loaded successfully")
@@ -184,7 +189,6 @@ class MainPage_MapPick(Frame):
         super().__init__(window)
         self.window = window
         self.assets = []
-        self.markers = []
 
         # dropdown options
         self.vars = {
@@ -197,6 +201,11 @@ class MainPage_MapPick(Frame):
 
         self.start_dropdown : Combobox = None
         self.dest_dropdown : Combobox = None
+
+        self.map_view = None
+
+        self.f_n = None
+        self.h_n = None
 
         self.build()
     
@@ -219,14 +228,17 @@ class MainPage_MapPick(Frame):
         self.dest_dropdown = body.dest_dropdown
 
         # map view
-        map_view = MapView(self)
-        map_view.grid(row=1, column=1, sticky="nsew")
+        self.map_view = MapView(self)
+        self.map_view.grid(row=1, column=1, sticky="nsew")
 
         # footer
         footer = MainPage_Footer(self)
         footer.grid(row=2, column=1, sticky="nsew")
 
     def run_algorithm(self):
+        self_f_n = self.map_view.f_n
+        self_h_n = self.map_view.h_n
+
         if self.vars["start_node"].get() == "Select Node" or self.vars["dest_node"].get() == "Select Node":
             self.vars["message"].set("Please select a start and destination node")
             messagebox.showerror("Error", "Please select a start and destination node")
@@ -243,13 +255,14 @@ class MainPage_MapPick(Frame):
                 print("A* Search")
 
     def on_marker_added(self):
-        self.vars["num_of_nodes"].set(len(self.markers))
-        if len(self.markers) >= 5:
-            self.start_dropdown.config(values=[str(x+1) for x in range(len(self.markers))])
+        self.vars["num_of_nodes"].set(len(self.map_view.markers))
+        
+        if len(self.map_view.markers) >= 5:
+            self.start_dropdown.config(values=[str(x+1) for x in range(len(self.map_view.markers))])
             self.start_dropdown.state(["!disabled"])
             self.vars["start_node"].set("Select Node")
 
-            self.dest_dropdown.config(values=[str(x+1) for x in range(len(self.markers))])
+            self.dest_dropdown.config(values=[str(x+1) for x in range(len(self.map_view.markers))])
             self.dest_dropdown.state(["!disabled"])
             self.vars["dest_node"].set("Select Node")
 

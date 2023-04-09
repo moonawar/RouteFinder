@@ -17,7 +17,7 @@ class MainWindow(IMainWindow):
             "MainPage_MapPick": MainPage_MapPick(self)
         }
 
-        self.opened_page = self.pages["StartingPage"]
+        self.opened_page = self.pages["MainPage_MapPick"]
         self.opened_page.grid(row=0, column=0, sticky="nsew")
 
     def open_page(self, page_name):
