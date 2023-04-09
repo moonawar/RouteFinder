@@ -26,7 +26,7 @@ class FilePickerBuilder():
 
         img_btn = add_img(self.parent, "main_page/file-choose-button.png", 1)
         btn = self.parent.create_image(x, y+40, image=img_btn, anchor="nw")
-        self.parent.tag_bind(btn, "<Button-1>", lambda e: self.open_file_dialog())
+        make_button(self.parent, btn, lambda e: self.open_file_dialog())
 
         self.file_chosen_label = self.parent.create_text(x+175, y+50, text="No file chosen", font=("Montserrat", 12, "normal"), fill="white", anchor="nw")
 

@@ -114,13 +114,13 @@ class MainPage_FileInput_Body(Canvas):
         self.create_text(40, 455, text="Start Finding", font=("Montserrat", 16, "bold"), fill="white", anchor="nw")   
         img_start_btn = add_img(self, "main_page/start-button.png", 1)
         start_btn = self.create_image(200, 450, image=img_start_btn, anchor="nw")
-        self.tag_bind(start_btn, "<Button-1>", lambda e: self.parent.run_algorithm())
+        make_button(self, start_btn, lambda e: self.parent.run_algorithm())
 
         # Clear button
         self.create_text(40, 505, text="Clear", font=("Montserrat", 16, "bold"), fill="white", anchor="nw")
         img_clear_btn = add_img(self, "main_page/clear-button.png", 1)
         clear_btn = self.create_image(200, 500, image=img_clear_btn, anchor="nw")
-        self.tag_bind(clear_btn, "<Button-1>", lambda e: self.parent.window.refresh_page())
+        make_button(self, clear_btn, lambda e: self.parent.window.refresh_page())
 
     # File picker callback
     def on_file_picked(self, file_path : str):
@@ -196,7 +196,7 @@ class MainPage_MapPick(Frame):
             "dest_node": StringVar(value="Select 5 Nodes or More"),
             "algorithm": StringVar(value="Not Selected"),
             "num_of_nodes": IntVar(value=0),
-            "message": StringVar(value="Select at least 5 nodes before running the algorithm"),
+            "message": StringVar(value="Select at least 5 nodes before running the algorithm. Right click to add nodes"),
         }
 
         self.start_dropdown : Combobox = None
@@ -296,10 +296,10 @@ class MainPage_MapPick_Body(Canvas):
         self.create_text(40, 355, text="Start Finding", font=("Montserrat", 16, "bold"), fill="white", anchor="nw")   
         img_start_btn = add_img(self, "main_page/start-button.png", 1)
         start_btn = self.create_image(200, 350, image=img_start_btn, anchor="nw")
-        self.tag_bind(start_btn, "<Button-1>", lambda e: self.parent.run_algorithm())
-
+        make_button(self, start_btn, lambda e: self.parent.run_algorithm())
+        
         # Clear button
         self.create_text(40, 405, text="Clear", font=("Montserrat", 16, "bold"), fill="white", anchor="nw")
         img_clear_btn = add_img(self, "main_page/clear-button.png", 1)
         clear_btn = self.create_image(200, 400, image=img_clear_btn, anchor="nw")
-        self.tag_bind(clear_btn, "<Button-1>", lambda e: self.parent.window.refresh_page())
+        make_button(self, clear_btn, lambda e: self.parent.window.refresh_page())

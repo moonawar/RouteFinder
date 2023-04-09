@@ -28,7 +28,8 @@ class StartingPage(Frame):
         # button 1 : file input
         add_img(page_canvas, "starting_page/file-input-btn.png")
         btn1 = page_canvas.create_image(120, 400, image=self.assets[-1], anchor="nw")
-        page_canvas.tag_bind(btn1, "<Button-1>", lambda e: self.window.open_page("MainPage_FileInput"))
+        make_button(page_canvas, btn1, lambda e: self.window.open_page("MainPage_FileInput"))
+        
 
         # btn1 desc
         page_canvas.create_text(120, 465, font=("Montserrat", 12, "normal"), fill="white", anchor="nw", width = 200,
@@ -37,7 +38,7 @@ class StartingPage(Frame):
         # button 2 : map pick
         add_img(page_canvas, "starting_page/map-pick-btn.png")
         btn2 = page_canvas.create_image(375, 400, image=self.assets[-1], anchor="nw")
-        page_canvas.tag_bind(btn2, "<Button-1>", lambda e: self.window.open_page("MainPage_MapPick"))
+        make_button(page_canvas, btn2, lambda e: self.window.open_page("MainPage_MapPick"))
 
         # btn2 desc
         page_canvas.create_text(375, 465, font=("Montserrat", 12, "normal"), fill="white", anchor="nw", width = 200,
