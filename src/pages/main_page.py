@@ -69,7 +69,7 @@ class MainPage_FileInput(Frame):
                 print(cost)
                 print(solution)      
             elif self.vars["algorithm"].get() == "A* Search":
-                solution, cost = solve(self.f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, True, self.h_n)
+                solution, cost = solve(self.f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, True, None)
                 print(cost)
                 print(solution)    
 

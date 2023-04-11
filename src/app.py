@@ -1,6 +1,7 @@
 from window.main_window import MainWindow
 import sys
 
+
 app : MainWindow = None
 
 def on_app_close():
