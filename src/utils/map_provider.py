@@ -1,4 +1,4 @@
-from tkintermapview import TkinterMapView
+from tkintermapview import TkinterMapView, convert_coordinates_to_address, canvas_position_marker
 import googlemaps
 from geopy.distance import geodesic
 
@@ -11,7 +11,9 @@ class MapView(TkinterMapView):
         self.parent = parent
         self.gmaps : googlemaps.Client = googlemaps.Client(key=API_KEY)
         self.markers = []
-        
+        self.steps = []
+        self.node_names = []
+
         self.f_n = [] # adjacency matrix for real distance
         # data example : [
         # [0, 100, 200], 
@@ -34,7 +36,14 @@ class MapView(TkinterMapView):
         self.add_right_click_menu_command("Add Node", self.on_map_add_node, pass_coords=True)
     
     def on_map_add_node(self, coords):
-        new_marker = self.set_marker(coords[0], coords[1], text="Node " + str(len(self.markers) + 1))
+        place_name = convert_coordinates_to_address(coords[0], coords[1]).address.split(",")[0]
+        for marker in self.markers:
+            if (place_name == marker.text):
+                place_name += f" ({len(self.markers)})"
+        self.parent.nodeIndexOf[place_name] = len(self.markers)
+        self.node_names.append(place_name)
+
+        new_marker = self.set_marker(coords[0], coords[1], text = place_name, text_color="#07111F")
         self.markers.append(new_marker)
 
         # ASSUMPTION : Road is undirectional, path from A to B is the same as path from B to A
@@ -44,7 +53,7 @@ class MapView(TkinterMapView):
         self.f_n.append([])
         j = len(self.markers) - 1
         for i in range(len(self.markers) - 1):
-            distance = self.create_path(new_marker.position, self.markers[i].position)
+            distance = self.create_path(j , i)
             self.f_n[i].append(distance)
             self.f_n[j].append(distance)
         self.f_n[j].append(0)
@@ -53,7 +62,7 @@ class MapView(TkinterMapView):
         self.h_n.append([])
         j = len(self.markers) - 1
         for i in range(len(self.markers) - 1):
-            distance = geodesic(new_marker.position, self.markers[i].position).meters
+            distance = geodesic(new_marker.position, self.markers[i].position).meters # euclidean distance
             self.h_n[i].append(distance)
             self.h_n[j].append(distance)
         self.h_n[j].append(0)
@@ -61,17 +70,44 @@ class MapView(TkinterMapView):
         self.parent.on_marker_added()
 
     def create_path(self, start, end):
-        directionsA = self.gmaps.directions(start, end, mode="driving")
-        directionsB = self.gmaps.directions(end, start, mode="driving")
+        directionsA = self.gmaps.directions(self.markers[start].position, self.markers[end].position, mode="driving")
+        directionsB = self.gmaps.directions(self.markers[end].position, self.markers[start].position, mode="driving")
 
-        shorter_directions = directionsA if directionsA[0]["legs"][0]["distance"]["value"] <= directionsB[0]["legs"][0]["distance"]["value"] else directionsB
+        stepsA = directionsA[0]["legs"][0]["steps"]
+        if (start == 1):
+            self.steps.append([None])
 
-        steps = shorter_directions[0]["legs"][0]["steps"]
+        if (len(self.steps) <= start):
+            self.steps.append([])
+        self.steps[start].append(stepsA)
 
-        starting_pos = (steps[0]["start_location"]["lat"], steps[0]["start_location"]["lng"])
+        stepsB = directionsB[0]["legs"][0]["steps"]
+        self.steps[end].append(stepsB)
+
+        self.steps[start].append(None)
+
+        starting_pos = (stepsA[0]["start_location"]["lat"], stepsA[0]["start_location"]["lng"])
         position_list = [starting_pos]
-        for step in steps:
+        for step in stepsA:
             position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-
         self.set_path(position_list, color = "#E1341E")
-        return shorter_directions[0]["legs"][0]["distance"]["value"]
+
+        starting_pos = (stepsB[0]["start_location"]["lat"], stepsB[0]["start_location"]["lng"])
+        position_list = [starting_pos]
+        for step in stepsB:
+            position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
+        self.set_path(position_list, color = "#E1341E")
+
+        distA = directionsA[0]["legs"][0]["distance"]["value"]
+        distB = directionsB[0]["legs"][0]["distance"]["value"]
+
+        return distA, distB
+    
+    def draw_solution_route(self, list_of_node):
+        for i in range(len(list_of_node) - 1):
+            steps = self.steps[list_of_node[i]][list_of_node[i + 1]]
+            starting_pos = (steps[0]["start_location"]["lat"], steps[0]["start_location"]["lng"])
+            position_list = [starting_pos]
+            for step in steps:
+                position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
+            self.set_path(position_list, color = "#E2BD45")

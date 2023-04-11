@@ -3,10 +3,11 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
 
-NODE_COLOR = "#E2BD45"
+NODE_COLOR = "#07111F"
+SOLUTION_EDGE_COLOR = "red"
 
 class GraphCanvas(Canvas):
-    def __init__(self, parent, data):
+    def __init__(self, parent, data, node_names = None):
         super().__init__(parent)
         self.data = data
         self.graph = None
@@ -22,7 +23,7 @@ class GraphCanvas(Canvas):
 
     def draw_graph(self):
         data = self.data
-        labelpos = 0.5
+        labelpos = 0.4
         if isSymmetric(data, len(data)):
             self.graph = nx.Graph()
         else:
@@ -38,8 +39,8 @@ class GraphCanvas(Canvas):
             ])
 
         pos = nx.spring_layout(self.graph)
-        nx.draw(self.graph, pos, node_color=NODE_COLOR, node_size=500, with_labels=True, alpha=0.75,
-            font_size=10, font_color="white", connectionstyle="arc3,rad=0.08", arrows=True)
+        nx.draw(self.graph, pos, node_color=NODE_COLOR, node_size=500, with_labels=True, alpha=0.85,
+            font_size=10, font_color="white", connectionstyle="arc3,rad=0.08", arrows=True, width=2)
         
         edge_labels = nx.get_edge_attributes(self.graph, "weight")
         nx.draw_networkx_edge_labels(self.graph, pos, font_size=8, label_pos=labelpos, font_color="black",
@@ -48,6 +49,9 @@ class GraphCanvas(Canvas):
         self.output_file_path = "../test/result/graph.png"
         plt.savefig(self.output_file_path)
         plt.clf()
+
+    # def draw_solution_route(buffer):
+
 
 # To check if a matrix is symmetric (the graph is undirected) or not (which means the graph is directed)
 def isSymmetric(mat, N):
