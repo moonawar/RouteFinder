@@ -17,6 +17,6 @@ def file_to_coor(file_path : str, size):
         row[2] = float(row[2])
         matrix.append(row)
     file.close()
-    #if len(matrix)!= size: #Different size exception
+    #if len(matrix)!= size: #Different size exception?
     #   
     return matrix

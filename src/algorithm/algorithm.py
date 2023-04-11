@@ -29,12 +29,13 @@ def getMinimumSpanningTree(matrix):
     return MST
 
 def expandMST(MST):
+    MST_OR = copy.deepcopy(MST)
     for i in range(len(MST)):
         for j in range(len(MST)):
             if i != j and MST[i][j] == 0:
-                MST[i][j] = DFSMST(MST, i,j, [False for k in range(len(MST))], 0)
-                MST[j][i] = MST[i][j]
-    return MST
+                MST_OR[i][j] = DFSMST(MST, i,j, [False for k in range(len(MST))], 0)
+                MST_OR[j][i] = MST_OR[i][j]
+    return MST_OR
                 
 def DFSMST(MST, start, goal,visited, value):
     visited[start] = True
@@ -44,7 +45,7 @@ def DFSMST(MST, start, goal,visited, value):
     else:
         for i in range(len(MST)):
             if i!= start and MST[start][i]!=0 and not visited[i]:
-                temp = DFSMST(MST, i, goal, visited, MST[start][i])
+                temp = DFSMST(MST, i, goal, visited, MST[start][i] + value)
                 if temp!=None:
                     return temp  
         return None
