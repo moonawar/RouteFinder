@@ -5,10 +5,7 @@ class Route:
         else:
             self.buffer = other.GetBuffer().copy()
     def __str__(self):
-        output = ""
-        for i in self.buffer:
-            output+=i
-        return output
+        return str(self.buffer)
     def addNode(self,node):
         self.buffer += [node]
         

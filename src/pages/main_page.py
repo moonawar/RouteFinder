@@ -6,7 +6,7 @@ from utils.element_builder import DropdownBuilder, FilePickerBuilder
 from utils.graph_drawer import GraphCanvas
 from utils.map_provider import MapView
 from window.i_main_window import IMainWindow
-
+from algorithm.algorithm import solve
 """ Main Page for File Input Mode"""
 class MainPage_FileInput(Frame):
     def __init__(self, window : IMainWindow):
@@ -65,9 +65,13 @@ class MainPage_FileInput(Frame):
         else:
             self.vars["message"].set("Running Algorithm...")
             if self.vars["algorithm"].get() == "Uniform-Cost Search":
-                print("Uniform-Cost Search")
+                solution, cost = solve(self.f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, False, None)          
+                print(cost)
+                print(solution)      
             elif self.vars["algorithm"].get() == "A* Search":
-                print("A* Search")
+                solution, cost = solve(self.f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, True, self.h_n)
+                print(cost)
+                print(solution)    
 
 
 """Header Component for Main Page"""
@@ -250,9 +254,13 @@ class MainPage_MapPick(Frame):
         else:
             self.vars["message"].set("Running Algorithm...")
             if self.vars["algorithm"].get() == "Uniform-Cost Search":
-                print("Uniform-Cost Search")
+                solution, cost = solve(self_f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, False, None)
+                print(cost)
+                print(solution)    
             elif self.vars["algorithm"].get() == "A* Search":
-                print("A* Search")
+                solution, cost = solve(self_f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, True, self_h_n)
+                print(cost)
+                print(solution)    
 
     def on_marker_added(self):
         self.vars["num_of_nodes"].set(len(self.map_view.markers))

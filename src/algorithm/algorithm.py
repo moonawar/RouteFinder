@@ -1,16 +1,15 @@
 import networkx as nx
 from queue import PriorityQueue
-from QELMT import Elmt
-from route import Route
+from algorithm.QELMT import Elmt
+from algorithm.route import Route
 import shlex
 import os
 import matplotlib.pyplot as plt
-def solve(graph, start, finish, astar, astarMatrix):
-    print("Finish: " + finish)
+def solve(matrix, start, finish, astar, astarMatrix):
     #I.S. start, finish string, exists in graph. Astar boolean.
     #F.S. return path from start to finish
     queue = PriorityQueue()
-    queue.put(Elmt(Route(), start, 0))
+    queue.put(Elmt(Route(), start, 0, 0))
     found = False
     while not queue.empty() and not found:
         #get elmt
@@ -18,7 +17,7 @@ def solve(graph, start, finish, astar, astarMatrix):
         if(temp.GetNode() in temp.GetRoute().GetBuffer()):
             continue
         
-        print("Simpul E: " +temp.GetNode()+", "+ str(temp.GetCost()))
+        #print("Simpul E: " +temp.GetNode()+", "+ str(temp.GetCost()))
         
         newRoute = Route(temp.GetRoute())
         newRoute.addNode(temp.GetNode())
@@ -26,12 +25,19 @@ def solve(graph, start, finish, astar, astarMatrix):
             found = True
             route = newRoute
         else:
-            for i in graph.neighbors(temp.GetNode()):
-                new = Elmt(newRoute, i,int(graph[temp.GetNode()][i]['weight']) + temp.GetCost())
+            for i in getNeighbour(matrix, temp.GetNode()):
+                new = Elmt(newRoute, i, matrix[temp.GetNode()][i] + temp.GetCost(), matrix[temp.GetNode()][i] + temp.GetCost() + (astarMatrix[i][finish] if astar else 0))
                 queue.put(new)
     return temp.GetCost(),route
 
-
+def getNeighbour(matrix, node):
+    array = []
+    for i in range(len(matrix[node])):
+        if matrix[node] != 0:
+            array += [i]
+    return array    
+            
+           
 
 def TxtReader(file):
     #Return graph
@@ -53,7 +59,7 @@ def TxtReader(file):
     f.close()
     return graph
 
-
+"""
 test = TxtReader("src/algorithm/test.txt")
 pos = nx.spring_layout(test)
 labels = nx.get_edge_attributes(test,'weight')
@@ -62,8 +68,8 @@ nx.draw_networkx_edge_labels(test,pos,edge_labels=labels)
 
 #plt.show()
 
-cost,solution = solve(test, "A", "B", False, False)
+cost,solution = solve(test, "A", "B", False, {})
 print("Hasilnya "+solution.__str__()+" dengan cost "+str(cost))
-
+"""
 
 
