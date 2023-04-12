@@ -11,7 +11,6 @@ class MapView(TkinterMapView):
         self.parent = parent
         self.gmaps : googlemaps.Client = googlemaps.Client(key=API_KEY)
         self.markers = []
-        self.steps = []
         self.node_names = []
 
         self.f_n = [] # adjacency matrix for real distance
@@ -53,9 +52,9 @@ class MapView(TkinterMapView):
         self.f_n.append([])
         j = len(self.markers) - 1
         for i in range(len(self.markers) - 1):
-            distance = self.create_path(j , i)
-            self.f_n[i].append(distance)
-            self.f_n[j].append(distance)
+            distA, distB = self.create_path(j , i)
+            self.f_n[i].append(distA)
+            self.f_n[j].append(distB)
         self.f_n[j].append(0)
 
         # Add distance to all nodes to h_n (heuristic, straight line distance)
@@ -69,45 +68,37 @@ class MapView(TkinterMapView):
             
         self.parent.on_marker_added()
 
-    def create_path(self, start, end):
+    def create_path(self, start, end, color = "#E1341E", bidirectional = True):
+
         directionsA = self.gmaps.directions(self.markers[start].position, self.markers[end].position, mode="driving")
-        directionsB = self.gmaps.directions(self.markers[end].position, self.markers[start].position, mode="driving")
-
         stepsA = directionsA[0]["legs"][0]["steps"]
-        if (start == 1):
-            self.steps.append([None])
 
-        if (len(self.steps) <= start):
-            self.steps.append([])
-        self.steps[start].append(stepsA)
-
-        stepsB = directionsB[0]["legs"][0]["steps"]
-        self.steps[end].append(stepsB)
-
-        self.steps[start].append(None)
 
         starting_pos = (stepsA[0]["start_location"]["lat"], stepsA[0]["start_location"]["lng"])
         position_list = [starting_pos]
         for step in stepsA:
             position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-        self.set_path(position_list, color = "#E1341E")
-
-        starting_pos = (stepsB[0]["start_location"]["lat"], stepsB[0]["start_location"]["lng"])
-        position_list = [starting_pos]
-        for step in stepsB:
-            position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-        self.set_path(position_list, color = "#E1341E")
+        self.set_path(position_list, color = color)
 
         distA = directionsA[0]["legs"][0]["distance"]["value"]
-        distB = directionsB[0]["legs"][0]["distance"]["value"]
+        
+        if (bidirectional):
+            directionsB = self.gmaps.directions(self.markers[end].position, self.markers[start].position, mode="driving")
+            stepsB = directionsB[0]["legs"][0]["steps"]
 
-        return distA, distB
+            starting_pos = (stepsB[0]["start_location"]["lat"], stepsB[0]["start_location"]["lng"])
+            position_list = [starting_pos]
+            for step in stepsB:
+                position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
+            self.set_path(position_list, color = color)
+
+            distB = directionsB[0]["legs"][0]["distance"]["value"]
+
+            return distA, distB
+        else:
+            return distA, 0
+        
     
     def draw_solution_route(self, list_of_node):
         for i in range(len(list_of_node) - 1):
-            steps = self.steps[list_of_node[i]][list_of_node[i + 1]]
-            starting_pos = (steps[0]["start_location"]["lat"], steps[0]["start_location"]["lng"])
-            position_list = [starting_pos]
-            for step in steps:
-                position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-            self.set_path(position_list, color = "#E2BD45")
+            self.create_path(list_of_node[i], list_of_node[i+1], color = "#E2BD45", bidirectional = False)

@@ -212,7 +212,7 @@ class MainPage_Footer(Frame):
         message_label.grid(row=2, column=1, sticky="nsew")
 
         message_value = Label(self, textvariable=self.parent.vars["message"],
-            font=("Montserrat", 12, "normal"), bg="#07111F", fg="white", anchor="w")
+            font=("Montserrat", 12, "normal"), bg="#07111F", fg="white", anchor="w", wraplength=600)
         message_value.grid(row=2, column=2, sticky="nsew", columnspan=2)
                             
 """ Main Page for File Input Mode"""
@@ -297,7 +297,7 @@ class MainPage_MapPick(Frame):
                     self.map_view.draw_solution_route(solution)
             elif self.vars["algorithm"].get() == "A* Search":
                 solution, cost = solve(self_f_n, self.nodeIndexOf[self.vars["start_node"].get()], 
-                    self.nodeIndexOf[self.vars["dest_node"].get()], True, self.h_n)
+                    self.nodeIndexOf[self.vars["dest_node"].get()], True, self_h_n)
                 if solution == None:
                     self.vars["message"].set("No solution found")
                     messagebox.showerror("Error", "No solution found")
