@@ -17,5 +17,5 @@ python app.py
 ```
 
 # Author
-Athif Nirwasito (13521053)
+Athif Nirwasito (13521053)<br>
 Addin Munawwar Yusuf (13521085)
