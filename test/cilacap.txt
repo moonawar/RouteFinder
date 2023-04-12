@@ -1,0 +1,16 @@
+   0  200 300   0 300 200   0   0
+ 200    0   0 200 800   0   0   0
+ 300    0   0 200 300   0   0   0
+   0  200 200  0    0   0  200 400
+ 300  800 300  0    0   0   0   0
+ 200    0   0  0    0   0   0  200
+   0    0   0 200   0   0  0   0
+   0    0   0 400   0  200  0   0
+Lomanis 10 10
+MH Thamrin 27 13
+Gunung Simping 9 6
+Pertamina 12 9
+SMP 1 15 4
+SMAN 1 Cilacap 9 13
+Janji Jiawa 8 18
+Kebab Turku 9 14
