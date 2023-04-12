@@ -78,7 +78,7 @@ class MapView(TkinterMapView):
         position_list = [starting_pos]
         for step in stepsA:
             position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-        self.set_path(position_list, color = color)
+        self.set_path(position_list, color = color, width = 1.5)
 
         distA = directionsA[0]["legs"][0]["distance"]["value"]
         
@@ -90,7 +90,7 @@ class MapView(TkinterMapView):
             position_list = [starting_pos]
             for step in stepsB:
                 position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-            self.set_path(position_list, color = color)
+            self.set_path(position_list, color = color, width = 1.5)
 
             distB = directionsB[0]["legs"][0]["distance"]["value"]
 
