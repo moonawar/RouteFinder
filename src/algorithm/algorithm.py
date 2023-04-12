@@ -3,9 +3,9 @@ from algorithm.QELMT import Elmt
 from algorithm.route import Route                
         
 def solve(matrix, start, finish, astar, astarMatrix = None):
-    #I.S. start, finish string, exists in graph. Astar boolean.
-    #F.S. return path from start to finish
-            
+    # Algoritma TSP dan astar
+    # set astar = false untuktsp
+    # set astar true untuk astar            
     queue = PriorityQueue()
     queue.put(Elmt(Route(), start, 0, 0))
     found = False
