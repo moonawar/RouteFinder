@@ -33,8 +33,8 @@ def createEuclidDistanceMatrix(arrayOfCoor):
     matrix = []
     for i in range(len(arrayOfCoor)):
         row = []
-        for j in range(i, len(arrayOfCoor)):
-            row.append(((arrayOfCoor[i][2]-arrayOfCoor[j][2])**2  + (arrayOfCoor[i][1]-arrayOfCoor[j][1])**2)**0.5)
+        for j in range(len(arrayOfCoor)):
+            row.append(((arrayOfCoor[i][1]-arrayOfCoor[j][1])**2  + (arrayOfCoor[i][0]-arrayOfCoor[j][0])**2)**0.5)
         matrix.append(row)
     return matrix
             

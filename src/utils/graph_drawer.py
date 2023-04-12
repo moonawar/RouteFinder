@@ -61,6 +61,8 @@ class GraphCanvas(Canvas):
         plt.savefig(self.output_file_path)
 
     def draw_solution_route(self, list_of_nodes):
+        
+
         tuples_of_edge = [(list_of_nodes[i], list_of_nodes[i+1]) for i in range(len(list_of_nodes) - 1)]
 
         nx.draw_networkx_edges(self.graph, self.pos, edgelist=tuples_of_edge, 

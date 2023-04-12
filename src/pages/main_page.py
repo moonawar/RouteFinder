@@ -6,7 +6,7 @@ from utils.element_builder import DropdownBuilder, FilePickerBuilder
 from utils.graph_drawer import GraphCanvas
 from utils.map_provider import MapView
 from window.i_main_window import IMainWindow
-from algorithm.algorithm import solve
+from algorithm.algorithm import solve, createEuclidDistanceMatrix
 
 """ Main Page for File Input Mode"""
 class MainPage_FileInput(Frame):
@@ -149,7 +149,7 @@ class MainPage_FileInput_Body(Canvas):
     def on_file_picked(self, file_path : str):
         self.parent.vars["file_path"].set(file_path)
         
-        nodes, node_names, self.node_coors = read_file_to_nodes(file_path)
+        nodes, node_names, node_coors = read_file_to_nodes(file_path)
         if (nodes == None):
             messagebox.showerror("Error", "File format is invalid")
             return
@@ -157,7 +157,8 @@ class MainPage_FileInput_Body(Canvas):
         self.create_graph(nodes, node_names)
 
         self.parent.f_n = nodes
-        self.parent.h_n = nodes
+        self.parent.h_n = createEuclidDistanceMatrix(node_coors)
+        print(self.parent.h_n)
 
         self.parent.vars["num_of_nodes"].set(len(nodes))
         self.parent.vars["message"].set("File " + file_path.split("/")[-1] + " loaded successfully")
