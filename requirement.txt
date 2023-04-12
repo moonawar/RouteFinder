@@ -1,0 +1,5 @@
+matplotlib
+networkx
+tkintermapview
+googlemaps
+geopy
