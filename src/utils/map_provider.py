@@ -68,7 +68,7 @@ class MapView(TkinterMapView):
             
         self.parent.on_marker_added()
 
-    def create_path(self, start, end, color = "#E1341E", bidirectional = True):
+    def create_path(self, start, end, color = "#E1341E", bidirectional = True, width = 1.5):
 
         directionsA = self.gmaps.directions(self.markers[start].position, self.markers[end].position, mode="driving")
         stepsA = directionsA[0]["legs"][0]["steps"]
@@ -78,7 +78,7 @@ class MapView(TkinterMapView):
         position_list = [starting_pos]
         for step in stepsA:
             position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-        self.set_path(position_list, color = color, width = 1.5)
+        self.set_path(position_list, color = color, width = width)
 
         distA = directionsA[0]["legs"][0]["distance"]["value"]
         
@@ -90,7 +90,7 @@ class MapView(TkinterMapView):
             position_list = [starting_pos]
             for step in stepsB:
                 position_list.append((step["end_location"]["lat"], step["end_location"]["lng"]))
-            self.set_path(position_list, color = color, width = 1.5)
+            self.set_path(position_list, color = color, width = width)
 
             distB = directionsB[0]["legs"][0]["distance"]["value"]
 
@@ -101,4 +101,4 @@ class MapView(TkinterMapView):
     
     def draw_solution_route(self, list_of_node):
         for i in range(len(list_of_node) - 1):
-            self.create_path(list_of_node[i], list_of_node[i+1], color = "#E2BD45", bidirectional = False)
+            self.create_path(list_of_node[i], list_of_node[i+1], color = "#E2BD45", bidirectional = False, width = 3)
