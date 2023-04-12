@@ -7,6 +7,7 @@ from utils.graph_drawer import GraphCanvas
 from utils.map_provider import MapView
 from window.i_main_window import IMainWindow
 from algorithm.algorithm import solve
+
 """ Main Page for File Input Mode"""
 class MainPage_FileInput(Frame):
     def __init__(self, window : IMainWindow):
@@ -17,6 +18,9 @@ class MainPage_FileInput(Frame):
         self.f_n = []
         self.h_n = []
 
+        self.nodeIndexOf = {}
+        self.node_names = []
+        
         # dropdown options
         self.vars = {
             "start_node": StringVar(value="Load File First"),
@@ -65,13 +69,26 @@ class MainPage_FileInput(Frame):
         else:
             self.vars["message"].set("Running Algorithm...")
             if self.vars["algorithm"].get() == "Uniform-Cost Search":
-                solution, cost = solve(self.f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, False, None)          
-                print(cost)
-                print(solution)      
+                solution, cost = solve(self.f_n, self.nodeIndexOf[self.vars["start_node"].get()], 
+                    self.nodeIndexOf[self.vars["dest_node"].get()], False)
+                if solution == None:
+                    self.vars["message"].set("No solution found")
+                    messagebox.showerror("Error", "No solution found")
+                else:
+                    self.vars["message"].set("Solution Found with UCS! Cost: " + str(cost) + " units. " + 
+                        "Route: " + " -> ".join([self.node_names[i] for i in solution]))
+                    self.graph_canvas.draw_solution_route(solution)
             elif self.vars["algorithm"].get() == "A* Search":
-                solution, cost = solve(self.f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, True, None)
-                print(cost)
-                print(solution)    
+                solution, cost = solve(self.f_n, self.nodeIndexOf[self.vars["start_node"].get()], 
+                    self.nodeIndexOf[self.vars["dest_node"].get()], True, self.h_n)
+                if solution == None:
+                    self.vars["message"].set("No solution found")
+                    messagebox.showerror("Error", "No solution found")
+                else:
+                    self.vars["message"].set("Solution Found with A*! Cost: " + str(cost) + " units. " + 
+                        "Route: " + " -> ".join([self.node_names[i] for i in solution]))
+                    self.graph_canvas.draw_solution_route(solution)
+
 
 
 """Header Component for Main Page"""
@@ -95,6 +112,8 @@ class MainPage_FileInput_Body(Canvas):
 
         self.start_dropdown : Combobox = None
         self.dest_dropdown : Combobox = None
+
+        self.node_coors = []
 
         self.build()
 
@@ -130,8 +149,12 @@ class MainPage_FileInput_Body(Canvas):
     def on_file_picked(self, file_path : str):
         self.parent.vars["file_path"].set(file_path)
         
-        nodes = file_to_matrix(file_path)
-        self.create_graph(nodes)
+        nodes, node_names, self.node_coors = read_file_to_nodes(file_path)
+        if (nodes == None):
+            messagebox.showerror("Error", "File format is invalid")
+            return
+        self.parent.node_names = node_names
+        self.create_graph(nodes, node_names)
 
         self.parent.f_n = nodes
         self.parent.h_n = nodes
@@ -139,16 +162,20 @@ class MainPage_FileInput_Body(Canvas):
         self.parent.vars["num_of_nodes"].set(len(nodes))
         self.parent.vars["message"].set("File " + file_path.split("/")[-1] + " loaded successfully")
 
-        self.start_dropdown.config(values=[str(x+1) for x in range(len(nodes))])
+        for i in range(len(node_names)):
+            self.parent.nodeIndexOf[node_names[i]] = i
+
+        self.start_dropdown.config(values=[node_names[i] for i in range(len(node_names))])
         self.start_dropdown.state(["!disabled"])
         self.parent.vars["start_node"].set("Select Node")
 
-        self.dest_dropdown.config(values=[str(x+1) for x in range(len(nodes))])
+        self.dest_dropdown.config(values=[node_names[i] for i in range(len(node_names))])
         self.dest_dropdown.state(["!disabled"])
         self.parent.vars["dest_node"].set("Select Node")
     
-    def create_graph(self, nodes) :
-        self.parent.graph_canvas = GraphCanvas(self.parent, nodes)
+    def create_graph(self, nodes, node_names) :
+        self.parent.graph_canvas = GraphCanvas(self.parent, nodes, 
+            node_names = node_names if node_names else None)
         self.parent.graph_canvas.grid(row=1, column=1, sticky="nsew")
 
 """Footer Component for Main Page"""
@@ -194,6 +221,8 @@ class MainPage_MapPick(Frame):
         self.window = window
         self.assets = []
 
+        self.nodeIndexOf = {}
+
         # dropdown options
         self.vars = {
             "start_node": StringVar(value="Select 5 Nodes or More"),
@@ -210,6 +239,8 @@ class MainPage_MapPick(Frame):
 
         self.f_n = None
         self.h_n = None
+
+        self.node_names = None
 
         self.build()
     
@@ -254,23 +285,37 @@ class MainPage_MapPick(Frame):
         else:
             self.vars["message"].set("Running Algorithm...")
             if self.vars["algorithm"].get() == "Uniform-Cost Search":
-                solution, cost = solve(self_f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, False, None)
-                print(cost)
-                print(solution)    
+                solution, cost = solve(self_f_n, self.nodeIndexOf[self.vars["start_node"].get()], 
+                    self.nodeIndexOf[self.vars["dest_node"].get()], False, None)
+                if solution == None:
+                    self.vars["message"].set("No solution found")
+                    messagebox.showerror("Error", "No solution found")
+                else:
+                    self.vars["message"].set("Solution Found with UCS! Cost: " + str(cost) + " units. " + 
+                        "Route: " + " -> ".join([self.node_names[i] for i in solution]))
+                    self.map_view.draw_solution_route(solution)
             elif self.vars["algorithm"].get() == "A* Search":
-                solution, cost = solve(self_f_n, int(self.vars["start_node"].get())-1, int(self.vars["dest_node"].get())-1, True, self_h_n)
-                print(cost)
-                print(solution)    
-
+                solution, cost = solve(self_f_n, self.nodeIndexOf[self.vars["start_node"].get()], 
+                    self.nodeIndexOf[self.vars["dest_node"].get()], True, self.h_n)
+                if solution == None:
+                    self.vars["message"].set("No solution found")
+                    messagebox.showerror("Error", "No solution found")
+                else:
+                    self.vars["message"].set("Solution Found with A*! Cost: " + str(cost) + " units. " + 
+                        "Route: " + " -> ".join([self.node_names[i] for i in solution]))
+                    self.map_view.draw_solution_route(solution)
     def on_marker_added(self):
         self.vars["num_of_nodes"].set(len(self.map_view.markers))
+        places = [place_name for place_name in self.nodeIndexOf.keys()]
+        dropdown_values = places
+        self.node_names = places
         
         if len(self.map_view.markers) >= 5:
-            self.start_dropdown.config(values=[str(x+1) for x in range(len(self.map_view.markers))])
+            self.start_dropdown.config(values=dropdown_values)
             self.start_dropdown.state(["!disabled"])
             self.vars["start_node"].set("Select Node")
 
-            self.dest_dropdown.config(values=[str(x+1) for x in range(len(self.map_view.markers))])
+            self.dest_dropdown.config(values=dropdown_values)
             self.dest_dropdown.state(["!disabled"])
             self.vars["dest_node"].set("Select Node")
 

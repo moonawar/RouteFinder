@@ -1,10 +1,10 @@
 from queue import PriorityQueue
-from algorithm.QELMT import Elmt
+from algorithm.q_elmt import Elmt
 from algorithm.route import Route                
         
 def solve(matrix, start, finish, astar, astarMatrix = None):
-    # Algoritma TSP dan astar
-    # set astar = false untuktsp
+    # Algoritma USC dan astar
+    # set astar = false untuk USC
     # set astar true untuk astar            
     queue = PriorityQueue()
     queue.put(Elmt(Route(), start, 0, 0))
@@ -23,10 +23,9 @@ def solve(matrix, start, finish, astar, astarMatrix = None):
         else:
             for i in getNeighbour(matrix, temp.GetNode()):
                 new = Elmt(newRoute, i, matrix[temp.GetNode()][i] + temp.GetCost(), matrix[temp.GetNode()][i] + temp.GetCost() + (astarMatrix[i][finish] if astar else 0))
-                print(matrix[temp.GetNode()][i])
                 queue.put(new)
     if(found):
-        return temp.GetCost(),route
+        return route.GetBuffer(), temp.GetCost()
     else:
         return None, None
 
