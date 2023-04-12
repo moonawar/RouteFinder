@@ -158,7 +158,6 @@ class MainPage_FileInput_Body(Canvas):
 
         self.parent.f_n = nodes
         self.parent.h_n = createEuclidDistanceMatrix(node_coors)
-        print(self.parent.h_n)
 
         self.parent.vars["num_of_nodes"].set(len(nodes))
         self.parent.vars["message"].set("File " + file_path.split("/")[-1] + " loaded successfully")
